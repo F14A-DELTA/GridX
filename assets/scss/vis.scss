@@ -1,0 +1,229 @@
+.vis {
+  background-color: #fff;
+}
+
+path.line-path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5;
+}
+
+.cursor-line {
+  stroke: $opennem-link-color;
+  stroke-width: 1px;
+}
+
+.cursor-line-rect,
+.cursor-line-focus-top-rect,
+.cursor-line-focus-bottom-rect {
+  fill: $opennem-link-color;
+}
+
+.cursor-rect {
+  fill: rgba(199, 69, 35, 0.1);
+  // fill: rgba(0, 0, 0, 0.1);
+  // stroke: rgba(199, 69, 35, 0.3);
+  // stroke-width: 0.5px;
+}
+
+.cursor-circle {
+  fill: $opennem-link-color;
+}
+
+.tooltip-rect {
+  fill: $opennem-link-color;
+}
+
+.tooltip-text {
+  font-size: 10px;
+  fill: #fff;
+}
+
+.cursor-line-text {
+  font-size: 10px;
+  fill: #fff;
+}
+
+.hover-layer {
+  fill: transparent;
+}
+
+.focus-group {
+  .focus-rect {
+    fill: rgba(199, 69, 35, 0.2);
+    // stroke: rgba(199, 69, 35, 0.5);
+    // stroke-width: 0.5;
+  }
+
+  .focus-line {
+    stroke: $opennem-link-color;
+    stroke-width: 1px;
+  }
+
+  .focus-top-rect,
+  .focus-bottom-rect {
+    fill: $opennem-link-color;
+  }
+}
+
+.compare-group rect {
+  pointer-events: none;
+}
+
+// axis
+.domain {
+  stroke: none;
+}
+
+.x-axis .tick:last-child {
+  .interval-5m,
+  .range-3d,
+  .interval-day,
+  .interval-year {
+    opacity: 1;
+  }
+}
+
+.x-axis .tick text {
+  color: #666;
+  text-anchor: start;
+  font-size: 9px;
+
+  @include tablet {
+    font-size: 10px;
+  }
+}
+
+.x-axis .tick line {
+  stroke-dasharray: 4.8;
+  stroke: rgba(0, 0, 0, 0.15);
+}
+
+.x-axis-tick .tick line {
+  stroke: none;
+}
+
+// .y-axis .tick:not(:first-of-type) line {
+//   stroke-dasharray: 4.8;
+//   stroke: rgba(0, 0, 0, 0.1);
+// }
+.y-axis-tick .tick text,
+.y-axis-2 .tick text {
+  color: #000;
+  text-anchor: start;
+  text-shadow: 2px 1px 1px $beige-light;
+}
+
+.y-axis-2 .tick text {
+  text-anchor: end;
+}
+
+.y-axis .tick text {
+  color: transparent;
+}
+
+.y-axis-tick .tick line,
+.y-axis .tick line {
+  stroke: rgba(0, 0, 0, 0.1);
+  stroke-dasharray: 4.8;
+
+  &.base {
+    stroke: rgb(110, 110, 110);
+    stroke-dasharray: 4.8;
+  }
+}
+
+.y-axis-tick .tick line.base {
+  stroke: rgb(110, 110, 110);
+  stroke-dasharray: 5;
+  stroke-width: 2;
+}
+
+// .y-axis-tick .tick:not(:first-of-type) line,
+// .y-axis .tick:not(:first-of-type) line {
+//   stroke: none;
+// }
+
+// disable text selection in axis tick marks
+.tick {
+  text {
+    font-family: $family-primary;
+    cursor: default;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &::selection {
+      background: none;
+    }
+  }
+}
+
+// brush styles
+.brush,
+.brush-vis {
+  // fill: #999;
+  // fill-opacity: 0.2;
+  // stroke: #000;
+
+  .selection {
+    fill: $opennem-link-color;
+    fill-opacity: 0.3;
+    stroke-width: 0;
+  }
+}
+
+.donut-vis {
+  .total {
+    font-weight: 700;
+    text-anchor: middle;
+    font-size: 20px;
+  }
+
+  .donut-arc {
+    cursor: pointer;
+  }
+}
+
+.column-vis {
+  .y-axis .tick text {
+    color: #000;
+    text-anchor: start;
+  }
+
+  .x-axis .tick line {
+    stroke: transparent;
+  }
+
+  .column-label-group {
+    font-family: $family-primary;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .tick line.base {
+    stroke: rgb(130, 130, 130);
+    stroke-dasharray: 2;
+  }
+
+  rect._total {
+    stroke-width: 1px;
+    stroke: $opennem-link-color;
+    stroke-dasharray: 4;
+    fill-opacity: 0.5;
+  }
+}
+
+// colour legend
+.colour-legend {
+  .tick line {
+    color: #aaa;
+  }
+}
+
+.chart-border {
+  border: 1px solid #E0DFDC;
+  background-color: #fff;
+}

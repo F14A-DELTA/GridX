@@ -1,0 +1,37 @@
+@charset "utf-8";
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
+
+// Define app variables
+@import './variables.scss';
+
+// Import only what you need from Bulma
+@import '../../node_modules/bulma/sass/utilities/_all.sass';
+@import '../../node_modules/bulma/sass/base/_all.sass';
+@import '../../node_modules/bulma/sass/elements/_all.sass';
+@import '../../node_modules/bulma/sass/grid/_all.sass';
+@import '../../node_modules/bulma/sass/components/navbar.sass';
+@import '../../node_modules/bulma/sass/components/panel.sass';
+@import '../../node_modules/bulma/sass/components/message.sass';
+@import '../../node_modules/bulma/sass/components/dropdown.sass';
+@import '../../node_modules/bulma/sass/components/card.sass';
+@import '../../node_modules/bulma/sass/layout/hero.sass';
+@import '../../node_modules/bulma/sass/layout/section.sass';
+@import '../../node_modules/bulma/sass/form/all.sass';
+
+// Import application styles
+@import './colour-scheme-mixins.scss';
+@import './vue-transitions.scss';
+@import './loading.scss';
+@import './header.scss';
+@import './report-issue.scss';
+@import './drop-down.scss';
+@import './vis.scss';
+@import './map.scss';
+@import './tooltip.scss';
+@import './buttons.scss';
+@import './vis-table.scss';
+@import './range-interval.scss';
+
+@import '../../node_modules/mapbox-gl/dist/mapbox-gl.css';

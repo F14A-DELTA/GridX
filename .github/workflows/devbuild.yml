@@ -1,0 +1,70 @@
+name: Deploy Static Site to S3
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+      NUXT_ENV_HEADER_X_ONUU: ${{ secrets.NUXT_ENV_HEADER_X_ONUU }}
+      AWS_REGION: ap-southeast-2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 14
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Resolve environment settings from branch
+        id: vars
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "deploy_env=production" >> $GITHUB_OUTPUT
+            echo "deploy_bucket=${{ secrets.AWS_BUCKET_MAIN }}" >> $GITHUB_OUTPUT
+            echo "deploy_distribution_id=${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_MAIN }}" >> $GITHUB_OUTPUT
+            echo "generate_cmd=generate" >> $GITHUB_OUTPUT
+          elif [ "${GITHUB_REF_NAME}" = "staging" ]; then
+            echo "deploy_env=staging" >> $GITHUB_OUTPUT
+            echo "deploy_bucket=${{ secrets.AWS_BUCKET_STAGING }}" >> $GITHUB_OUTPUT
+            echo "deploy_distribution_id=${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_STAGING }}" >> $GITHUB_OUTPUT
+            echo "generate_cmd=generate-dev" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_env=develop" >> $GITHUB_OUTPUT
+            echo "deploy_bucket=${{ secrets.AWS_BUCKET_DEVELOP }}" >> $GITHUB_OUTPUT
+            echo "deploy_distribution_id=${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_DEVELOP }}" >> $GITHUB_OUTPUT
+            echo "generate_cmd=generate-dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate static site
+        run: yarn ${{ steps.vars.outputs.generate_cmd }}
+
+      - name: Upload to S3
+        uses: shallwefootball/s3-upload-action@v1.3.3
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ steps.vars.outputs.deploy_bucket }}
+          source_dir: dist
+          destination_dir: ""
+
+      - name: Invalidate CloudFront
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ steps.vars.outputs.deploy_distribution_id }}
+          PATHS: "/*"
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
