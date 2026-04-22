@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globe Preview</title>
+    <style>
+        body { margin: 0; background-color: #000; overflow: hidden; }
+        #globe { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="globe"></div>
+
+    <script src="https://unpkg.com/three@0.130.1/build/three.min.js"></script>
+    <script src="https://unpkg.com/three-globe@2.18.5/dist/three-globe.min.js"></script>
+
+    <script>
+        // TrackballControls is not in the core THREE object when loaded via script tag
+        // We'll use a simple auto-rotation if we can't easily get TrackballControls
+        // Or we can try to load it from a specific CDN path.
+    </script>
+    <script src="https://unpkg.com/three@0.130.1/examples/js/controls/TrackballControls.js"></script>
+
+    <script>
+        const COLORS = [
+            "#f43f5e", "#ec4899", "#d946ef", "#a855f7", "#8b5cf6", "#6366f1", 
+            "#3b82f6", "#0ea5e9", "#06b6d4", "#14b8a6", "#10b981", "#22c55e", 
+            "#84cc16", "#eab308", "#f59e0b", "#f97316", "#ef4444"
+        ];
+
+        const arcsData = [
+            // Sydney (NSW) <-> Melbourne (VIC)
+            { startLat: -33.8688, startLng: 151.2093, endLat: -37.8136, endLng: 144.9631, color: ["#00e5ff", "#3b82f6"] },
+            // Sydney (NSW) <-> Brisbane (QLD)
+            { startLat: -33.8688, startLng: 151.2093, endLat: -27.4698, endLng: 153.0251, color: ["#00e5ff", "#06b6d4"] },
+            // Melbourne (VIC) <-> Adelaide (SA)
+            { startLat: -37.8136, startLng: 144.9631, endLat: -34.9285, endLng: 138.6007, color: ["#3b82f6", "#8b5cf6"] },
+            // Adelaide (SA) <-> Perth (WA)
+            { startLat: -34.9285, startLng: 138.6007, endLat: -31.9505, endLng: 115.8605, color: ["#8b5cf6", "#0ea5e9"] },
+            // Brisbane (QLD) <-> Darwin (NT)
+            { startLat: -27.4698, startLng: 153.0251, endLat: -12.4634, endLng: 130.8456, color: ["#06b6d4", "#14b8a6"] },
+            // Darwin (NT) <-> Perth (WA)
+            { startLat: -12.4634, startLng: 130.8456, endLat: -31.9505, endLng: 115.8605, color: ["#14b8a6", "#0ea5e9"] },
+            // Hobart (TAS) <-> Melbourne (VIC)
+            { startLat: -42.8821, startLng: 147.3272, endLat: -37.8136, endLng: 144.9631, color: ["#22c55e", "#3b82f6"] },
+            // Canberra (ACT) <-> Sydney (NSW)
+            { startLat: -35.2809, startLng: 149.1300, endLat: -33.8688, endLng: 151.2093, color: ["#84cc16", "#00e5ff"] }
+        ];
+
+        // Initialize Globe
+        const globe = new ThreeGlobe()
+            .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+            .atmosphereColor("#aaaaaa")
+            .arcsData(arcsData)
+            .arcColor("color")
+            .arcDashLength(1)
+            .arcDashGap(() => Math.random())
+            .arcStroke(0.6)
+            .arcDashInitialGap(() => Math.random() * 5)
+            .arcDashAnimateTime(2000);
+
+        // Fetch GeoJSON for hex polygons
+        fetch('https://raw.githubusercontent.com/vasturiano/three-globe/master/example/country-polygons/ne_110m_admin_0_countries.geojson')
+            .then(res => res.json())
+            .then(countries => {
+                globe.hexPolygonsData(countries.features)
+                    .hexPolygonResolution(3)
+                    .hexPolygonMargin(0.5)
+                    .hexPolygonColor((feature) =>
+                        feature.properties && feature.properties.ADMIN === "Australia"
+                            ? "#00e5ff"
+                            : "#aaaaaa"
+                    );
+            });
+
+        // Setup renderer
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('globe').appendChild(renderer.domElement);
+
+        // Setup scene
+        const scene = new THREE.Scene();
+        scene.add(globe);
+        scene.add(new THREE.AmbientLight(0xffffff));
+        scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
+
+        // Setup camera
+        const camera = new THREE.PerspectiveCamera();
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        camera.position.z = 300;
+
+        // Add camera controls
+        let tbControls;
+        if (THREE.TrackballControls) {
+            tbControls = new THREE.TrackballControls(camera, renderer.domElement);
+            tbControls.noZoom = true;
+            tbControls.noPan = true;
+        }
+
+        // Intro spin config: spin quickly, then settle on Australia.
+        const introDurationMs = 5200;
+        const neutralHoldMs = 900;
+        const introStartMs = performance.now();
+        const australiaLng = 134.0;
+        const startAustraliaLat = 0.0;
+        const endAustraliaLat = 25.0;
+        const settleRotationY = -THREE.MathUtils.degToRad(australiaLng);
+        const settleRotationX = THREE.MathUtils.degToRad(-endAustraliaLat);
+        const startRotationY = settleRotationY + Math.PI * 2.2;
+        const startRotationX = THREE.MathUtils.degToRad(-startAustraliaLat);
+
+        globe.rotation.y = startRotationY;
+        globe.rotation.x = startRotationX;
+
+        // Animation loop
+        function animate() {
+            const elapsed = performance.now() - introStartMs;
+            const progress = Math.min(elapsed / introDurationMs, 1);
+            const tiltProgress = Math.min(Math.max((elapsed - neutralHoldMs) / (introDurationMs - neutralHoldMs), 0), 1);
+
+            if (progress < 1) {
+                const easedY = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+                const easedX = 1 - Math.pow(1 - tiltProgress, 2); // gentler, more visible tilt
+                globe.rotation.y = startRotationY + (settleRotationY - startRotationY) * easedY;
+                globe.rotation.x = startRotationX + (settleRotationX - startRotationX) * easedX;
+            } else {
+                globe.rotation.y = settleRotationY;
+                globe.rotation.x = settleRotationX;
+            }
+
+            if (tbControls) tbControls.update();
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
