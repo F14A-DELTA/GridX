@@ -1,0 +1,19 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 14
+        - nvm use 14
+        - node -v
+        - yarn install --frozen-lockfile
+    build:
+      commands:
+        - yarn generate-dev
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
