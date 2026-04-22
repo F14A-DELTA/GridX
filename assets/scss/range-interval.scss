@@ -1,0 +1,102 @@
+.button-group {
+  $border-radius: 4px;
+
+  display: flex;
+  align-items: center;
+
+  .buttons {
+    background-color: $buttons-background;
+    border-radius: $border-radius;
+  }
+
+  .button {
+    font-size: 0.9rem;
+    border-radius: 0;
+    position: relative;
+    color: #6a6a6a;
+    min-width: 40px;
+    border: 1px solid #dddddd;
+
+    .filter-caret {
+      margin-left: 5px;
+    }
+
+    &:hover {
+      color: #000;
+      background-color: transparent;
+    }
+
+    &.is-selected {
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #6A6A6A;
+      border-radius: $border-radius;
+    }
+
+    &:first-child {
+      border-top-left-radius: $border-radius;
+      border-bottom-left-radius: $border-radius;
+    }
+
+    &:last-child {
+      border-top-right-radius: $border-radius;
+      border-bottom-right-radius: $border-radius;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+    }
+
+    & > span {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dropdown-trigger-icon {
+      font-size: 10px;
+    }
+  }
+
+  .filter-period-buttons {
+    margin-left: 1rem;
+  }
+    
+}
+
+.filter-menu {
+  display: block;
+  margin-top: 2px;
+
+  .dropdown-menu {
+    display: block;
+    font-size: 1rem;
+  }
+
+  .dropdown-content {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $border-colour;
+    gap: 2px;
+    padding: 4px;
+
+    button {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      text-align: left;
+      padding: 8px 16px;
+      border-radius: 4px;
+  
+      &:hover {
+        background: $buttons-background;
+      }
+
+      &.is-selected {
+        background: black;
+        color: #fff;
+      }
+    }
+  }
+}
