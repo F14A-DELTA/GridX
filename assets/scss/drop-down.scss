@@ -1,0 +1,48 @@
+.header-dropdowns .dropdown {
+  font-size: 1.3rem;
+
+  .dropdown-content {
+    padding: 5px;
+  }
+
+  .dropdown-item {
+    border-radius: $header-hover-radius;
+  }
+
+  .dropdown-trigger-icon {
+    font-size: 0.8rem;
+  }
+
+  .dropdown-trigger {
+    background-color: transparent;
+    font-family: $header-font-family;
+    font-weight: 700;
+    font-size: inherit;
+    padding: 4px 8px;
+    color: $dark-grey;
+    height: auto;
+    
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    &:hover strong {
+      color: black;
+    }
+  }
+
+  .dropdown-item {
+    font-size: 1.2rem;
+
+    &.nuxt-link-active {
+      background-color: black;
+      color: #fff;
+    }
+  }
+}
+
+.dropdown-menu {
+  z-index: 9999;
+}
