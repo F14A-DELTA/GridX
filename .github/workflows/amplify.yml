@@ -9,7 +9,7 @@ frontend:
         - yarn install --frozen-lockfile
     build:
       commands:
-        - yarn generate-dev
+        - yarn generate
   artifacts:
     baseDirectory: dist
     files:
